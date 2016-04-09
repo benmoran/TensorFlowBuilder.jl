@@ -3,6 +3,8 @@ using PyCall
 import Base: convert
 import PyCall: PyObject
 
+export SessionRunnable, AbstractTensor, DimsType, NoneDimsType, NegDimsType
+
 macro pywrapper(typename, supertype)
   quote
     immutable $typename <: $supertype
@@ -17,7 +19,7 @@ end
 abstract SessionRunnable
 abstract AbstractTensor <: SessionRunnable
 
-export SessionRunnable, AbstractTensor
+
 
 @pywrapper Dtype Any
 
@@ -34,11 +36,23 @@ convert(::Type{Tensor}, a::Array) = Tensor(a)
 convert(::Type{AbstractTensor}, a::Array) = Tensor(a)
 
 ## DimsType ##
+# TensorFlow shape arguments sometimes want None to mean "wild" (e.g. tf.placeholder)
+# and sometimes use negatives to mean wildcard (e.g.reshape)
+
+abstract DimsType
+
 "A literal used for TensorFlow shape arguments.
-  Negative indices are passed as Python `None` values
-  and interpreted as wildcards."
-type DimsType
+  Negative indices are passed as Python `None` values."
+type NoneDimsType <: DimsType
   arr::Vector{Int}
 end
-DimsType(a::Tuple{Vararg{Int}}) = DimsType(collect(a))
-PyCall.PyObject(o::DimsType) = PyCall.PyObject([a < 0 ? nothing : a for a in o.arr])
+NoneDimsType(a::Tuple{Vararg{Int}}) = NoneDimsType(collect(a))
+PyCall.PyObject(o::NoneDimsType) = PyCall.PyObject([a < 0 ? nothing : a for a in o.arr])
+
+"A literal used for TensorFlow shape arguments.
+  Negative indices are passed through to Python."
+type NegDimsType <: DimsType
+  arr::Vector{Int}
+end
+NegDimsType(a::Tuple{Vararg{Int}}) = NegDimsType(collect(a))
+PyCall.PyObject(o::NegDimsType) = PyCall.PyObject(o.arr)
