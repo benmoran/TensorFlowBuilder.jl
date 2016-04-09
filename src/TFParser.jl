@@ -75,6 +75,8 @@ function guesstype(name::Symbol, doc1::AbstractString)
     AbstractString
   elseif name == :shape
     Union{AbstractTensor, DimsType}
+  elseif name == :strides
+    PyVectorType
   elseif name == :seed
     Int
   elseif name == :keep_dims

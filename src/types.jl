@@ -3,7 +3,7 @@ using PyCall
 import Base: convert
 import PyCall: PyObject
 
-export SessionRunnable, AbstractTensor, DimsType, NoneDimsType, NegDimsType
+export SessionRunnable, AbstractTensor, DimsType, NoneDimsType, NegDimsType, PyVectorType
 
 macro pywrapper(typename, supertype)
   quote
@@ -56,3 +56,13 @@ type NegDimsType <: DimsType
 end
 NegDimsType(a::Tuple{Vararg{Int}}) = NegDimsType(collect(a))
 PyCall.PyObject(o::NegDimsType) = PyCall.PyObject(o.arr)
+
+
+"A wrapper type for things that TensorFlow insists must be Python
+  lists, like conv2d's strides argument."
+type PyVectorType <: DimsType
+  pyvec::PyVector
+end
+PyVectorType(a::Vector) = PyVectorType(PyVector(a))
+PyVectorType(a::Tuple) = PyVectorType(collect(a))
+PyCall.PyObject(o::PyVectorType) = PyCall.PyObject(o.pyvec)
