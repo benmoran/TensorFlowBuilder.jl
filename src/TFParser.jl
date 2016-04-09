@@ -74,7 +74,7 @@ function guesstype(name::Symbol, doc1::AbstractString)
   elseif name == :name
     AbstractString
   elseif name == :shape
-    Union{AbstractTensor, Tuple{Vararg{Int}}, Vector{Int}}
+    Union{AbstractTensor, DimsType}
   elseif name == :seed
     Int
   elseif name == :keep_dims
@@ -94,9 +94,13 @@ function guesstyperet(name::Symbol, doc1::AbstractString)
   elseif name == :shape
     Tensor
   elseif name == :placeholder
-      Placeholder
+    Placeholder
   elseif name == :Variable
-      Variable
+    Variable
+  elseif name == :Session
+    Session
+  elseif name == :InteractiveSession
+    Session
   else
     guesstype(doc1)
   end
@@ -273,9 +277,11 @@ function tfwritejuliatypes(mod::Module, pymodname::Symbol, io::IO; withdoc=true)
       name = symbol(t[:__name__])
       init = t[:__init__]
       doc = t[:__doc__]
-        # TODO check if this type is already declared in CoreTypes
-        # if it is, import it and add a constructor
-      # if it isn't, declare it
+      if name in names(CoreTypes)
+        # Don't declare it again.
+        # (Could still import it and add a new constructor?)
+        continue
+      end
       tff = nothing
       try
         tff = TFFunction(init, name; skipself=true) # TODO fix the type instead of guessing

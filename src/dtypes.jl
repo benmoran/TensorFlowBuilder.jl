@@ -1,3 +1,4 @@
+# N.B. This file is maintained in TensorFlowBuilder source
 export dtypesym
 
 const DTYPE_SYMS = Symbol[:float32,

@@ -1,6 +1,7 @@
 module TensorFlow
 
-# This is only a stub used to run tests in the generated module.
+# N.B. This is only a stub used to run tests in the generated module,
+#      and does not get installed to TensorFlow/src.
 
 include("CoreTypes.jl")
 using .CoreTypes

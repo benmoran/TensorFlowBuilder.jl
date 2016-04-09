@@ -17,4 +17,4 @@ generate:	setup
 	julia src/generate_api.jl ${GEN_PATH} > generate_api.log 2>&1
 
 install:
-	echo rsync -v --exclude TensorFlow.jl ${GEN_PATH} ../TensorFlow
+	rsync -va --exclude TensorFlow.jl ${GEN_PATH}/ ../TensorFlow/
