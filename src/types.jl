@@ -20,7 +20,6 @@ abstract SessionRunnable
 abstract AbstractTensor <: SessionRunnable
 
 
-
 @pywrapper Dtype Any
 
 @pywrapper Tensor AbstractTensor
@@ -31,6 +30,8 @@ abstract AbstractTensor <: SessionRunnable
 @pywrapper Operation SessionRunnable
 
 @pywrapper Session Any
+
+@pywrapper Optimizer Any
 
 convert(::Type{Tensor}, a::Array) = Tensor(a)
 convert(::Type{AbstractTensor}, a::Array) = Tensor(a)

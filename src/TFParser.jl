@@ -103,6 +103,8 @@ function guesstyperet(name::Symbol, doc1::AbstractString)
     Session
   elseif name == :InteractiveSession
     Session
+  elseif endswith(string(name), "Optimizer")
+    Optimizer
   else
     guesstype(doc1)
   end
