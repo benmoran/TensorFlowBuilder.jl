@@ -21,8 +21,8 @@ Pkg.clone("https://github.com/benmoran/TensorFlowBuilder.jl")
 You also need to have the Python `tensorflow` package installed, following the [`standard instructions`](http://www.tensorflow.org/get_started/os_setup.md).  Check you are able to import this via PyCall in Julia:
 
 ```
-usin PyCall
-@pyimport tensorflow
+using PyCall
+@pyimport tensorflow as tf
 ```
 
 

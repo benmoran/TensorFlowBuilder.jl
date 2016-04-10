@@ -1,6 +1,7 @@
 using PyCall
 
 @pyimport tensorflow as tf
+@pyimport tensorflow.models.rnn.rnn_cell as tfrnncell
 import TensorFlowBuilder: TFParser
 
 target_path = ARGS[1]
@@ -18,6 +19,7 @@ for (pyimp, pymod, pyname, jlname) in [
                                        (:(tensorflow), :tf, :tf, :Tf),
                                        (:(tensorflow.python.ops.nn), :tf_nn, :(tf.nn), :TfNn),
                                        (:(tensorflow.python.training.training), :tf_train, :(tf.train), :TfTrain),
+                                       (:(tensorflow.models.rnn.rnn_cell), :tf_rnn_cell, :(tfrnncell), :TfRnnCell),
                                        ]
   @eval m = $pyname
   fname = joinpath(outdir, "$jlname.jl")

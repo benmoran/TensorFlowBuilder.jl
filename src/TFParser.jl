@@ -80,11 +80,17 @@ function guesstype(name::Symbol, doc1::AbstractString)
   elseif name == :seed
     Int
   elseif name == :keep_dims
-      Bool
+    Bool
   elseif name == :placeholder
-      Placeholder
+    Placeholder
   elseif name == :Variable
-      Variable
+    Variable
+  elseif startswith(string(name), "use_")
+    Bool
+  elseif startswith(string(name), "num_")
+    Int
+  elseif endswith(string(name), "_size")
+    Int
   else
     guesstype(doc1)
   end
@@ -131,6 +137,8 @@ function guesstype(docstring::AbstractString)
     AbstractString
   elseif ismatch(r"[Aa] `tf.Dtype`", docstring)
     Dtype
+  elseif ismatch(r": int,`", docstring)
+    Int
   else
     # Give up
     Any
