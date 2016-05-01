@@ -37,7 +37,7 @@ jlname(s::Symbol) = jlname(string(s))
 # off the module prefix from the type names to use in the generated code.  Hence:
 "Strips off module qualifications from type names"
 relativename(dt::DataType) = rsplit(string(dt), '.', limit=2)[end]
-relativename(u::Union) = "Union{$(join(map(relativename, u.types), ','))}"
+relativename(u::Union) = "Union{$(join(sort(map(relativename, u.types)), ','))}"
 
 "Format a TensorFlow function argument as a Julia function argument"
 function jlformat(a::TFArg)
