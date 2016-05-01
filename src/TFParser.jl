@@ -235,7 +235,17 @@ TFFunction(f::PyObject, name::Symbol; skipself=false) = begin
     push!(tfargs, TFArg(arg, argdoc, default, mandatory))
   end
   retdoc = grepreturn(doc)
-  TFFunction(f, name, tfargs, grepreturn(doc), doc, guesstyperet(name, retdoc))
+
+
+  if doc == nothing
+    doc = ""
+    retdoc = ""
+  else
+    retdoc = grepreturn(doc)
+  end
+
+  TFFunction(f, name, tfargs, retdoc, doc, guesstyperet(name, retdoc))
+
 end
 
 TFFunction(f::PyObject) = TFFunction(f, symbol(f[:__name__]))
