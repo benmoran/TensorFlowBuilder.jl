@@ -48,6 +48,9 @@ function jlformat(a::TFArg)
   if !a.mandatory
     if haskey(CoreTypes.DTYPES, a.default)
       "$s=$(CoreTypes.DTYPES[a.default])"
+    elseif ispyfunc(a.default)
+      # replace Python functions with their wrapped Julia versions
+      "$s=$(jlname(a.default[:__name__]))"
     else
       "$s=$(repr(a.default))"
     end
@@ -68,8 +71,10 @@ end
 
 
 "Try to infer the type of a Tensorflow function argument from name, docstring and default value"
-function guesstype(name::Symbol, doc1::AbstractString)
-  if name == :dtype
+function guesstype(name::Symbol, doc1::AbstractString, default::Any)
+  if ispyfunc(default)
+    Function
+  elseif name == :dtype
     Dtype
   elseif name == :name
     AbstractString
@@ -192,7 +197,7 @@ grepreturn(::Void) = nothing
 TFArg(arg::AbstractString, argdoc::AbstractString, default::Any, mandatory::Bool) = begin
   name = symbol(arg)
   doc1 = split(argdoc, ". ", limit=2)[1]
-  typesym = guesstype(name, doc1)
+  typesym = guesstype(name, doc1, default)
   if typesym == Tensor
     typesym = AbstractTensor
   end
@@ -262,7 +267,7 @@ tfwritejulia(pymod::PyObject, pymodname::Symbol, io::IO; withdoc=true) =
 
 function tfwritejulia(mod::Module, pymodname::Symbol, io::IO; withdoc=true)
   tfwritejuliatypes(mod, pymodname, io; withdoc=withdoc)
-    tfwritejuliafuncs(mod, pymodname, io; withdoc=withdoc)
+  tfwritejuliafuncs(mod, pymodname, io; withdoc=withdoc)
 end
 
 "A function that takes a TensorFlow module and tries to output Julia code

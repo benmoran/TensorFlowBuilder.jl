@@ -5,6 +5,7 @@ import TensorFlowBuilder.CoreTypes: Tensor
 
 using PyCall
 @pyimport tensorflow as tf
+@pyimport tensorflow.python.ops.rnn_cell as tf_rnn_cell
 
 
 q = TFParser.PyInspector.pydoc(tf.random_normal)
@@ -52,4 +53,9 @@ tff2 = TFFunction(tf.slice)
 @test TFParser.jlname(findarg(tff2, :begin).name) == "begin_"
 
 tff3 = TFFunction(tf.constant)
-@test TFParser.guesstype(:value, findarg(tff3, :value).doc1) == Tensor
+@test TFParser.guesstype(:value, findarg(tff3, :value).doc1, nothing) == Tensor
+
+
+
+tff4 = TFFunction(tf_rnn_cell.BasicRNNCell[:__init__])
+@test tff4.args[4].typesym == Function
